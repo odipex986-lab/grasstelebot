@@ -37,16 +37,16 @@ class Config:
     # --- reminder message templates (edit these to change the bot's personality) ---
     reminder_templates: tuple[str, ...] = field(
         default=(
-            "🌿 {mention} has been chronically online for {minutes} straight minutes. Please go interact with grass before the group files a wellness check.",
-            "🏆 {mention} just hard-carried the unemployment allegations this window.",
-            "📵 {mention}, your screen time is starting to look like a full-time career. Log off.",
-            "🚨 {mention} is posting like the rent is paid in Discord messages. Touch grass immediately.",
-            "☀️ {mention} has terminally-online final boss energy. Go outside and nerf it.",
-            "🪦 {mention} really turned this chat into a side quest for people with no sunlight.",
-            "🥀 {mention}, even your monitor wants a break from your presence at this point.",
-            "🧂 {mention} farmed the chat for {minutes} minutes straight like being offline is a paid feature.",
-            "📉 {mention} is cooking absolutely nothing except their own digital footprint right now.",
-            "🛜 {mention} has such strong Discord mod aura this window that the Wi-Fi should be embarrassed.",
+            "🌿 has been chronically online for {minutes} straight minutes. Please go interact with grass before the group files a wellness check.",
+            "🏆 just hard-carried the unemployment allegations this window.",
+            "📵 screen time is starting to look like a full-time career. Log off.",
+            "🚨 is posting like the rent is paid in Discord messages. Touch grass immediately.",
+            "☀️ has terminally-online final boss energy. Go outside and nerf it.",
+            "🪦 really turned this chat into a side quest for people with no sunlight.",
+            "🥀 even the monitor wants a break from this presence at this point.",
+            "🧂 farmed the chat for {minutes} minutes straight like being offline is a paid feature.",
+            "📉 is cooking absolutely nothing except a digital footprint right now.",
+            "🛜 has such strong Discord mod aura this window that the Wi-Fi should be embarrassed.",
         )
     )
 

@@ -27,9 +27,6 @@ from counter import SenderInfo
 
 logger = logging.getLogger(__name__)
 
-_MENTION_TOKEN = "__MENTION__"
-
-
 class AIReminderGenerator:
     """Generate short reminder messages with an AI provider and cache outputs."""
 
@@ -64,7 +61,6 @@ class AIReminderGenerator:
     async def generate(
         self,
         winner: SenderInfo,
-        mention_html: str,
         winner_message_count: int,
         total_messages: int,
         unique_senders: int,
@@ -89,14 +85,6 @@ class AIReminderGenerator:
                 logger.debug("AI reminder attempt %d produced empty output.", attempt)
                 continue
 
-            if candidate.count(_MENTION_TOKEN) != 1:
-                logger.debug(
-                    "AI reminder attempt %d missed the mention token contract: %r",
-                    attempt,
-                    candidate,
-                )
-                continue
-
             if self._is_recent_duplicate(candidate):
                 logger.debug("AI reminder attempt %d was too similar to recent output.", attempt)
                 continue
@@ -106,7 +94,7 @@ class AIReminderGenerator:
                 continue
 
             self._recent_messages.append(candidate)
-            return candidate.replace(_MENTION_TOKEN, mention_html)
+            return candidate
 
         logger.warning("AI reminder generator exhausted retries. Using static template.")
         return None
@@ -336,7 +324,7 @@ class AIReminderGenerator:
             f"Unique senders: {unique_senders}\n"
             "Recent reminders to avoid copying:\n"
             f"{recent_lines}\n"
-            "Write a fresh reminder now."
+            "Write a fresh reminder clause now."
         )
 
     @staticmethod
@@ -344,8 +332,9 @@ class AIReminderGenerator:
         """Shared system instruction for short, safe roast lines."""
         return (
             "You write one-line Telegram reminders for a savage touch-grass bot. "
-            f"Return exactly one sentence under 160 characters. Include the token {_MENTION_TOKEN} "
-            "exactly once. Make it sharp, mocking, humiliating, and funny like a brutal group-chat roast, "
+            "Return exactly one sentence fragment under 120 characters. Do not include any usernames, @mentions, "
+            "names, numbers, message counts, or interval values because the app adds those separately. "
+            "Start the fragment naturally so it works after a comma. Make it sharp, mocking, humiliating, and funny like a brutal group-chat roast, "
             "not polite encouragement. Lean into Gen Z roast language like cooked, washed, NPC, jobless aura, "
             "chronically online, Discord mod energy, delusional, touch grass, no-life, and terminally-online behavior. "
             "Roast their behavior, free time, and screen addiction. Avoid slurs, sexual content, protected-class attacks, "
@@ -407,8 +396,7 @@ class AIReminderGenerator:
     @staticmethod
     def _normalize(text: str) -> str:
         """Reduce superficial differences before duplicate checks."""
-        without_mention = text.replace(_MENTION_TOKEN, "")
-        lowered = without_mention.lower()
+        lowered = text.lower()
         return re.sub(r"[^a-z0-9]+", "", lowered)
 
 

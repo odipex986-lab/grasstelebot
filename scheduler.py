@@ -47,12 +47,19 @@ def _build_mention(info: SenderInfo) -> str:
         return f'<a href="tg://user?id={info.user_id}">{safe_name}</a>'
 
 
-def _pick_fallback_message(mention: str) -> str:
+def _pick_fallback_message() -> str:
     """Pick a random reminder template and fill in the placeholders."""
     template = random.choice(cfg.reminder_templates)
     return template.format(
-        mention=mention,
         minutes=cfg.interval_minutes,
+    )
+
+
+def _build_prefix(mention: str, winner_message_count: int) -> str:
+    """Build the standard message prefix with the winner stats."""
+    return (
+        f"{mention} sent {winner_message_count} "
+        f"message{'s' if winner_message_count != 1 else ''} in {cfg.interval_minutes} minutes, "
     )
 
 
@@ -64,17 +71,17 @@ async def _build_message(
     unique_senders: int,
 ) -> str:
     """Prefer AI output when configured, otherwise use the static fallback."""
+    prefix = _build_prefix(mention, winner_message_count)
     ai_message = await ai_reminder_generator.generate(
         winner=winner,
-        mention_html=mention,
         winner_message_count=winner_message_count,
         total_messages=total_messages,
         unique_senders=unique_senders,
     )
     if ai_message:
-        return ai_message
+        return f"{prefix}{ai_message}"
 
-    return _pick_fallback_message(mention)
+    return f"{prefix}{_pick_fallback_message()}"
 
 
 # ---------------------------------------------------------------------------
