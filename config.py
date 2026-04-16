@@ -37,14 +37,16 @@ class Config:
     # --- reminder message templates (edit these to change the bot's personality) ---
     reminder_templates: tuple[str, ...] = field(
         default=(
-            "🌿 {mention} has been glued to the chat for {minutes} straight minutes. Log off and go remember what weather feels like.",
-            "🏆 Window winner: {mention}. Incredible commitment to having absolutely no life.",
-            "📵 {mention}, the keyboard is not your soulmate. Step outside immediately.",
-            "🚨 {mention} dominated this window like rent is due in Discord messages. Touch grass.",
-            "☀️ {mention} is once again confusing nonstop posting with a personality. Go outside.",
-            "🪦 {mention} posted enough this window to make unemployment look like a hobby.",
-            "🥀 {mention}, take a break. Even your screen is tired of seeing you.",
-            "🧂 {mention} farmed this chat for {minutes} minutes straight. Go stand in sunlight and think about your choices.",
+            "🌿 {mention} has been chronically online for {minutes} straight minutes. Please go interact with grass before the group files a wellness check.",
+            "🏆 {mention} just hard-carried the unemployment allegations this window.",
+            "📵 {mention}, your screen time is starting to look like a full-time career. Log off.",
+            "🚨 {mention} is posting like the rent is paid in Discord messages. Touch grass immediately.",
+            "☀️ {mention} has terminally-online final boss energy. Go outside and nerf it.",
+            "🪦 {mention} really turned this chat into a side quest for people with no sunlight.",
+            "🥀 {mention}, even your monitor wants a break from your presence at this point.",
+            "🧂 {mention} farmed the chat for {minutes} minutes straight like being offline is a paid feature.",
+            "📉 {mention} is cooking absolutely nothing except their own digital footprint right now.",
+            "🛜 {mention} has such strong Discord mod aura this window that the Wi-Fi should be embarrassed.",
         )
     )
 

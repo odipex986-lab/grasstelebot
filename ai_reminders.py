@@ -346,10 +346,10 @@ class AIReminderGenerator:
             "You write one-line Telegram reminders for a savage touch-grass bot. "
             f"Return exactly one sentence under 160 characters. Include the token {_MENTION_TOKEN} "
             "exactly once. Make it sharp, mocking, humiliating, and funny like a brutal group-chat roast, "
-            "not polite encouragement. Lean into terminally-online, no-life, keyboard-addict, sunlight-deficient, "
-            "discord-mod energy. Roast their behavior, free time, and screen addiction. Avoid slurs, sexual content, "
-            "protected-class attacks, threats, graphic violence, profanity, hashtags, markdown, and quote marks. "
-            "Do not add explanations or multiple options."
+            "not polite encouragement. Lean into Gen Z roast language like cooked, washed, NPC, jobless aura, "
+            "chronically online, Discord mod energy, delusional, touch grass, no-life, and terminally-online behavior. "
+            "Roast their behavior, free time, and screen addiction. Avoid slurs, sexual content, protected-class attacks, "
+            "threats, graphic violence, profanity, hashtags, markdown, and quote marks. Do not add explanations or multiple options."
         )
 
     def _is_recent_duplicate(self, candidate: str) -> bool:
