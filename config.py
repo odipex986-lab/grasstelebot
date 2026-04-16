@@ -37,11 +37,14 @@ class Config:
     # --- reminder message templates (edit these to change the bot's personality) ---
     reminder_templates: tuple[str, ...] = field(
         default=(
-            "🌿 Grass check: {mention} has been typing non-stop for {minutes} minutes. Log off. Touch grass. Now.",
-            "🏆 Most active: {mention}. Congratulations, you need sunlight.",
-            "📵 {mention} touched the keyboard way too much. Step outside immediately.",
-            "🚨 {mention} wins the no-life award for this window. Grass is waiting.",
-            "☀️ Attention: {mention} has forgotten the outside world exists. This is your reminder.",
+            "🌿 {mention} has been glued to the chat for {minutes} straight minutes. Log off and go remember what weather feels like.",
+            "🏆 Window winner: {mention}. Incredible commitment to having absolutely no life.",
+            "📵 {mention}, the keyboard is not your soulmate. Step outside immediately.",
+            "🚨 {mention} dominated this window like rent is due in Discord messages. Touch grass.",
+            "☀️ {mention} is once again confusing nonstop posting with a personality. Go outside.",
+            "🪦 {mention} posted enough this window to make unemployment look like a hobby.",
+            "🥀 {mention}, take a break. Even your screen is tired of seeing you.",
+            "🧂 {mention} farmed this chat for {minutes} minutes straight. Go stand in sunlight and think about your choices.",
         )
     )
 
