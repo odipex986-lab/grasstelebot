@@ -17,6 +17,7 @@ import logging
 
 from telegram.ext import Application, MessageHandler, filters
 
+from ai_reminders import ai_reminder_generator
 from config import cfg, setup_logging
 from handlers import handle_message
 from scheduler import create_scheduler
@@ -53,6 +54,8 @@ async def _on_shutdown(application: Application) -> None:  # type: ignore[type-a
     if scheduler and scheduler.running:
         scheduler.shutdown(wait=False)
         logger.info("Scheduler stopped.")
+
+    await ai_reminder_generator.aclose()
 
 
 def main() -> None:

@@ -16,6 +16,7 @@ from telegram import Bot
 from telegram.constants import ParseMode
 from telegram.error import TelegramError
 
+from ai_reminders import ai_reminder_generator
 from config import cfg
 from counter import SenderInfo, counter
 
@@ -46,10 +47,34 @@ def _build_mention(info: SenderInfo) -> str:
         return f'<a href="tg://user?id={info.user_id}">{safe_name}</a>'
 
 
-def _pick_message(mention: str) -> str:
-    """Pick a random reminder template and fill in the mention."""
+def _pick_fallback_message(mention: str) -> str:
+    """Pick a random reminder template and fill in the placeholders."""
     template = random.choice(cfg.reminder_templates)
-    return template.format(mention=mention)
+    return template.format(
+        mention=mention,
+        minutes=cfg.interval_minutes,
+    )
+
+
+async def _build_message(
+    winner: SenderInfo,
+    mention: str,
+    winner_message_count: int,
+    total_messages: int,
+    unique_senders: int,
+) -> str:
+    """Prefer AI output when configured, otherwise use the static fallback."""
+    ai_message = await ai_reminder_generator.generate(
+        winner=winner,
+        mention_html=mention,
+        winner_message_count=winner_message_count,
+        total_messages=total_messages,
+        unique_senders=unique_senders,
+    )
+    if ai_message:
+        return ai_message
+
+    return _pick_fallback_message(mention)
 
 
 # ---------------------------------------------------------------------------
@@ -72,6 +97,9 @@ async def touch_grass_job(bot: Bot) -> None:
         counter.total_messages(),
         len(counter.snapshot()),
     )
+    snapshot = counter.snapshot()
+    total_messages = counter.total_messages()
+    unique_senders = len(snapshot)
 
     winner: Optional[SenderInfo] = counter.get_winner()
 
@@ -81,7 +109,13 @@ async def touch_grass_job(bot: Bot) -> None:
         return
 
     mention = _build_mention(winner)
-    message_text = _pick_message(mention)
+    message_text = await _build_message(
+        winner=winner,
+        mention=mention,
+        winner_message_count=snapshot.get(winner.user_id, 0),
+        total_messages=total_messages,
+        unique_senders=unique_senders,
+    )
 
     try:
         await bot.send_message(

@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 from dataclasses import dataclass, field
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -25,17 +26,36 @@ class Config:
     allowed_chat_id: int
     interval_minutes: int
     log_level: str
+    ai_reminders_enabled: bool
+    openai_api_key: Optional[str]
+    openai_model: str
+    ai_moderation_enabled: bool
+    ai_recent_messages_limit: int
 
     # --- reminder message templates (edit these to change the bot's personality) ---
     reminder_templates: tuple[str, ...] = field(
         default=(
-            "🌿 Grass check: {mention} has been typing non-stop for 30 minutes. Log off. Touch grass. Now.",
+            "🌿 Grass check: {mention} has been typing non-stop for {minutes} minutes. Log off. Touch grass. Now.",
             "🏆 Most active: {mention}. Congratulations, you need sunlight.",
             "📵 {mention} touched the keyboard way too much. Step outside immediately.",
             "🚨 {mention} wins the no-life award for this window. Grass is waiting.",
             "☀️ Attention: {mention} has forgotten the outside world exists. This is your reminder.",
         )
     )
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    """Parse a permissive boolean environment variable."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    return default
 
 
 def load_config() -> Config:
@@ -69,11 +89,35 @@ def load_config() -> Config:
     if log_level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"):
         log_level = "INFO"
 
+    openai_api_key = os.getenv("OPENAI_API_KEY", "").strip() or None
+    ai_reminders_enabled = _env_bool(
+        "AI_REMINDERS_ENABLED",
+        default=bool(openai_api_key),
+    )
+    openai_model = os.getenv("OPENAI_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
+    ai_moderation_enabled = _env_bool("AI_MODERATION_ENABLED", True)
+
+    raw_recent_messages = os.getenv("AI_RECENT_MESSAGES_LIMIT", "20").strip()
+    try:
+        ai_recent_messages_limit = int(raw_recent_messages)
+        if ai_recent_messages_limit < 1:
+            raise ValueError
+    except ValueError:
+        sys.exit(
+            "[FATAL] AI_RECENT_MESSAGES_LIMIT must be a positive integer, "
+            f"got: {raw_recent_messages!r}"
+        )
+
     return Config(
         bot_token=bot_token,
         allowed_chat_id=allowed_chat_id,
         interval_minutes=interval_minutes,
         log_level=log_level,
+        ai_reminders_enabled=ai_reminders_enabled,
+        openai_api_key=openai_api_key,
+        openai_model=openai_model,
+        ai_moderation_enabled=ai_moderation_enabled,
+        ai_recent_messages_limit=ai_recent_messages_limit,
     )
 
 

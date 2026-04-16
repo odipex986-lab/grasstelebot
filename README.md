@@ -135,6 +135,17 @@ In the Railway service, open the `Variables` tab and add:
 
 Railway may suggest these automatically from `.env.example`.
 
+If you want fresh AI-written reminders instead of only the built-in templates,
+also add:
+
+| Variable | Required | Example |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | For AI only | `sk-...` |
+| `AI_REMINDERS_ENABLED` | No | `true` |
+| `OPENAI_MODEL` | No | `gpt-5.4-mini` |
+| `AI_MODERATION_ENABLED` | No | `true` |
+| `AI_RECENT_MESSAGES_LIMIT` | No | `20` |
+
 ### 4. Deploy and verify
 
 1. Trigger the deploy if Railway has not already started one.
@@ -162,6 +173,11 @@ If Railway asks about networking, you can leave it alone.
 | `ALLOWED_CHAT_ID` | Yes | none | Numeric ID of the allowed Telegram group |
 | `TOUCH_GRASS_INTERVAL_MINUTES` | No | `30` | How often to announce the winner |
 | `LOG_LEVEL` | No | `INFO` | Logging verbosity |
+| `OPENAI_API_KEY` | No | none | Enables OpenAI-generated reminder text |
+| `AI_REMINDERS_ENABLED` | No | auto | Explicitly enable or disable AI reminders |
+| `OPENAI_MODEL` | No | `gpt-5.4-mini` | Model used to generate reminder text |
+| `AI_MODERATION_ENABLED` | No | `true` | Moderates generated text before posting |
+| `AI_RECENT_MESSAGES_LIMIT` | No | `20` | Recent AI outputs kept in memory for deduping |
 
 ---
 
@@ -170,6 +186,11 @@ If Railway asks about networking, you can leave it alone.
 Edit `reminder_templates` in `config.py` to change the bot's tone.
 
 `{mention}` is replaced with either `@username` or a clickable Telegram mention.
+`{minutes}` is replaced with your configured reminder interval.
+
+If `OPENAI_API_KEY` is configured, the bot will try to generate a fresh one-line
+message with OpenAI first and fall back to the built-in templates if the API is
+disabled, fails, or returns something unsafe or repetitive.
 
 ---
 
@@ -201,6 +222,14 @@ Edit `reminder_templates` in `config.py` to change the bot's tone.
 
 - Your `BOT_TOKEN` is wrong or revoked. Regenerate it with `/revoke` in BotFather.
 
+**AI reminders do not appear**
+
+- Confirm `OPENAI_API_KEY` is set in Railway.
+- If your account does not have access to `gpt-5.4-mini`, change `OPENAI_MODEL`
+  to another model available on your OpenAI account.
+- Check Railway logs. The bot will fall back to built-in templates when OpenAI
+  generation or moderation fails.
+
 ---
 
 ## Project structure
@@ -211,6 +240,7 @@ touch-grass-bot/
 |-- config.py
 |-- counter.py
 |-- handlers.py
+|-- ai_reminders.py
 |-- scheduler.py
 |-- requirements.txt
 |-- Procfile
