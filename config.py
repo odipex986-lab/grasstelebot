@@ -27,6 +27,8 @@ class Config:
     interval_minutes: int
     log_level: str
     ai_reminders_enabled: bool
+    google_api_key: Optional[str]
+    google_model: str
     openai_api_key: Optional[str]
     openai_model: str
     ai_moderation_enabled: bool
@@ -89,10 +91,17 @@ def load_config() -> Config:
     if log_level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"):
         log_level = "INFO"
 
+    google_api_key = (
+        os.getenv("GOOGLE_API_KEY", "").strip()
+        or os.getenv("GEMINI_API_KEY", "").strip()
+        or None
+    )
+    google_model = os.getenv("GOOGLE_MODEL", "gemini-2.5-flash-lite").strip() or "gemini-2.5-flash-lite"
+
     openai_api_key = os.getenv("OPENAI_API_KEY", "").strip() or None
     ai_reminders_enabled = _env_bool(
         "AI_REMINDERS_ENABLED",
-        default=bool(openai_api_key),
+        default=bool(google_api_key or openai_api_key),
     )
     openai_model = os.getenv("OPENAI_MODEL", "gpt-5.4-mini").strip() or "gpt-5.4-mini"
     ai_moderation_enabled = _env_bool("AI_MODERATION_ENABLED", True)
@@ -114,6 +123,8 @@ def load_config() -> Config:
         interval_minutes=interval_minutes,
         log_level=log_level,
         ai_reminders_enabled=ai_reminders_enabled,
+        google_api_key=google_api_key,
+        google_model=google_model,
         openai_api_key=openai_api_key,
         openai_model=openai_model,
         ai_moderation_enabled=ai_moderation_enabled,

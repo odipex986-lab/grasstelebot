@@ -136,15 +136,22 @@ In the Railway service, open the `Variables` tab and add:
 Railway may suggest these automatically from `.env.example`.
 
 If you want fresh AI-written reminders instead of only the built-in templates,
-also add:
+the preferred free option is Google Gemini. Add:
+
+| Variable | Required | Example |
+| --- | --- | --- |
+| `GOOGLE_API_KEY` | For Gemini only | `AIza...` |
+| `GOOGLE_MODEL` | No | `gemini-2.5-flash-lite` |
+| `AI_REMINDERS_ENABLED` | No | `true` |
+| `AI_RECENT_MESSAGES_LIMIT` | No | `20` |
+
+OpenAI is still supported too:
 
 | Variable | Required | Example |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | For AI only | `sk-...` |
-| `AI_REMINDERS_ENABLED` | No | `true` |
 | `OPENAI_MODEL` | No | `gpt-5.4-mini` |
 | `AI_MODERATION_ENABLED` | No | `true` |
-| `AI_RECENT_MESSAGES_LIMIT` | No | `20` |
 
 ### 4. Deploy and verify
 
@@ -173,6 +180,8 @@ If Railway asks about networking, you can leave it alone.
 | `ALLOWED_CHAT_ID` | Yes | none | Numeric ID of the allowed Telegram group |
 | `TOUCH_GRASS_INTERVAL_MINUTES` | No | `30` | How often to announce the winner |
 | `LOG_LEVEL` | No | `INFO` | Logging verbosity |
+| `GOOGLE_API_KEY` | No | none | Enables Gemini-generated reminder text |
+| `GOOGLE_MODEL` | No | `gemini-2.5-flash-lite` | Gemini model used for reminder text |
 | `OPENAI_API_KEY` | No | none | Enables OpenAI-generated reminder text |
 | `AI_REMINDERS_ENABLED` | No | auto | Explicitly enable or disable AI reminders |
 | `OPENAI_MODEL` | No | `gpt-5.4-mini` | Model used to generate reminder text |
@@ -188,9 +197,10 @@ Edit `reminder_templates` in `config.py` to change the bot's tone.
 `{mention}` is replaced with either `@username` or a clickable Telegram mention.
 `{minutes}` is replaced with your configured reminder interval.
 
-If `OPENAI_API_KEY` is configured, the bot will try to generate a fresh one-line
-message with OpenAI first and fall back to the built-in templates if the API is
-disabled, fails, or returns something unsafe or repetitive.
+If `GOOGLE_API_KEY` is configured, the bot will use Gemini first. If not, it
+can use OpenAI when `OPENAI_API_KEY` is configured. In all cases it falls back
+to the built-in templates if AI is disabled, fails, or returns something unsafe
+or repetitive.
 
 ---
 
@@ -224,6 +234,9 @@ disabled, fails, or returns something unsafe or repetitive.
 
 **AI reminders do not appear**
 
+- Confirm `GOOGLE_API_KEY` or `OPENAI_API_KEY` is set in Railway.
+- Gemini is preferred when `GOOGLE_API_KEY` is present. The default Gemini model
+  is `gemini-2.5-flash-lite`, which is currently listed on Google's free tier.
 - Confirm `OPENAI_API_KEY` is set in Railway.
 - If your account does not have access to `gpt-5.4-mini`, change `OPENAI_MODEL`
   to another model available on your OpenAI account.
